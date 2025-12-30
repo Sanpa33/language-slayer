@@ -5,17 +5,6 @@ import Languages from "./components/Languages";
 import { languages } from "./languages";
 import { clsx } from "clsx";
 
-/**
- * Goal: Add in the incorrect guesses mechanism to the game
- *
- * Challenge: When mapping over the languages, determine how
- * many of them have been "lost" and add the "lost" class if
- * so.
- *
- * Hint: use the wrongGuessCount combined with the index of
- * the item in the array while inside the languages.map code
- */
-
 function App() {
   //State Values
   const [currentWord, setCurrentWord] = useState("react");
@@ -28,6 +17,14 @@ function App() {
   const wrongGuessCount = guessedLetters.filter(
     (letter) => !currentWord.includes(letter)
   ).length;
+
+  const isGameWon = currentWord
+    .split("")
+    .every((letter) => guessedLetters.includes(letter));
+
+  const isGameLost = wrongGuessCount >= languages.length - 1;
+
+  const isGameOver = isGameWon || isGameLost;
 
   const letterElements = currentWord.split("").map((letter, index) => {
     return (
@@ -71,10 +68,11 @@ function App() {
         <p>Well done! 🎉</p>
       </section>
       <section className="language-chips">
-        <Languages languages={languages} />
+        <Languages languages={languages} wrongGuessCount={wrongGuessCount} />
       </section>
       <section className="word">{letterElements}</section>
       <section className="keyboard">{keyboardElements}</section>
+      {isGameOver && <button className="new-game">New Game</button>}
     </main>
   );
 }
