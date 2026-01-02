@@ -60,12 +60,28 @@ function App() {
     );
   });
 
+  const gameStatusClass = clsx("game-status", {
+    won: isGameWon,
+    lost: isGameLost,
+  });
+
   return (
     <main>
       <Header />
-      <section className="game-status">
-        <h2>You win!</h2>
-        <p>Well done! 🎉</p>
+      <section className={gameStatusClass}>
+        {isGameOver ? (
+          isGameWon ? (
+            <>
+              <h2>You win!</h2>
+              <p>Well done! 🎉</p>
+            </>
+          ) : (
+            <>
+              <h2>Game over!</h2>
+              <p>You lose! Better start learning Assembly 😭</p>
+            </>
+          )
+        ) : null}
       </section>
       <section className="language-chips">
         <Languages languages={languages} wrongGuessCount={wrongGuessCount} />
