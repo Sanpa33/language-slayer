@@ -4,17 +4,18 @@ import Header from "./components/Header";
 import Languages from "./components/Languages";
 import { languages } from "./languages";
 import { clsx } from "clsx";
-import { getFarewellText } from "./utils.js";
+import { getFarewellText, getRandomWord } from "./utils.js";
 
 function App() {
   //State Values
-  const [currentWord, setCurrentWord] = useState("react");
+  const [currentWord, setCurrentWord] = useState(getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([]);
 
   //Static Value
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
   // Derived values
+  const numGuessesLeft = languages.length - 1;
   const wrongGuessCount = guessedLetters.filter(
     (letter) => !currentWord.includes(letter)
   ).length;
@@ -53,8 +54,11 @@ function App() {
     return (
       <button
         className={className}
-        onClick={() => addGuessedLetter(letter)}
         key={letter}
+        disabled={isGameOver}
+        aria-disabled={guessedLetters.includes(letter)}
+        aria-label={`Letter ${letter}`}
+        onClick={() => addGuessedLetter(letter)}
       >
         {letter.toUpperCase()}
       </button>
@@ -99,11 +103,32 @@ function App() {
   return (
     <main>
       <Header />
-      <section className={gameStatusClass}>{renderGameStatus()}</section>
+      <section aria-live="polite" role="status" className={gameStatusClass}>
+        {renderGameStatus()}
+      </section>
       <section className="language-chips">
         <Languages languages={languages} wrongGuessCount={wrongGuessCount} />
       </section>
       <section className="word">{letterElements}</section>
+
+      {/* Combined visually-hidden aria-live region for status updates */}
+      <section className="sr-only" aria-live="polite" role="status">
+        <p>
+          {currentWord.includes(lastGuessedLetter)
+            ? `Correct! The letter ${lastGuessedLetter} is in the word.`
+            : `Sorry, the letter ${lastGuessedLetter} is not in the word.`}
+          You have {numGuessesLeft} attempts left.
+        </p>
+        <p>
+          Current word:{" "}
+          {currentWord
+            .split("")
+            .map((letter) =>
+              guessedLetters.includes(letter) ? letter + "." : "blank."
+            )
+            .join(" ")}
+        </p>
+      </section>
       <section className="keyboard">{keyboardElements}</section>
       {isGameOver && <button className="new-game">New Game</button>}
     </main>
