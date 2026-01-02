@@ -8,7 +8,7 @@ import { getFarewellText, getRandomWord } from "./utils.js";
 
 function App() {
   //State Values
-  const [currentWord, setCurrentWord] = useState(getRandomWord());
+  const [currentWord, setCurrentWord] = useState(() => getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([]);
 
   //Static Value
@@ -100,6 +100,11 @@ function App() {
     return null;
   }
 
+  function resetGame() {
+    setCurrentWord(() => getRandomWord());
+    setGuessedLetters([]);
+  }
+
   return (
     <main>
       <Header />
@@ -130,7 +135,11 @@ function App() {
         </p>
       </section>
       <section className="keyboard">{keyboardElements}</section>
-      {isGameOver && <button className="new-game">New Game</button>}
+      {isGameOver && (
+        <button onClick={resetGame} className="new-game">
+          New Game
+        </button>
+      )}
     </main>
   );
 }
